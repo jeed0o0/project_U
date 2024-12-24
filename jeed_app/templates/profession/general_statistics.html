@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Statistics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        header {
+            background-color: #343a40;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #495057;
+            padding: 0.5rem 1rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        h2 {
+            color: #495057;
+            border-bottom: 2px solid #adb5bd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+        }
+
+        table thead {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        table th, table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #343a40;
+            color: #fff;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>General Statistics</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'profession_list' %}">Home</a></li>
+            <li><a href="{% url 'general_statistics' %}">General Statistics</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section>
+            <h2>Dynamics of Wages by Year</h2>
+            <canvas id="salaryChart"></canvas>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Average Salary (Rubles)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year, salary in salary_dynamics.items %}
+                    <tr>
+                        <td>{{ year }}</td>
+                        <td>{{ salary }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Vacancies by Year</h2>
+            <canvas id="vacanciesChart"></canvas>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Number of Vacancies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in vacancies_by_year %}
+                    <tr>
+                        <td>{{ data.year }}</td>
+                        <td>{{ data.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Salary by Cities</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>City</th>
+                        <th>Average Salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in salary_by_city %}
+                    <tr>
+                        <td>{{ data.city }}</td>
+                        <td>{{ data.avg_salary }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Share of Vacancies by Cities</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>City</th>
+                        <th>Share (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in city_shares %}
+                    <tr>
+                        <td>{{ data.city }}</td>
+                        <td>{{ data.share }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Top 20 Skills</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for skill, count in top_skills %}
+                    <tr>
+                        <td>{{ skill }}</td>
+                        <td>{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Аль Бокали Гавад Тарек Ахмед  РИ-230944</p>
+    </footer>
+
+    <script>
+        // Salary Dynamics Chart
+        const salaryCtx = document.getElementById('salaryChart').getContext('2d');
+        const salaryData = {
+            labels: [{% for year in salary_dynamics.keys %}'{{ year }}',{% endfor %}],
+            datasets: [{
+                label: 'Average Salary',
+                data: [{% for salary in salary_dynamics.values %}{{ salary }},{% endfor %}],
+                backgroundColor: 'rgba(108, 117, 125, 0.2)',
+                borderColor: 'rgba(108, 117, 125, 1)',
+                borderWidth: 1
+            }]
+        };
+        new Chart(salaryCtx, { type: 'line', data: salaryData });
+    </script>
+</body>
+</html>

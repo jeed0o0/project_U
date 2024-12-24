@@ -1,0 +1,166 @@
+{% block content %}
+  <h1 class="text-center text-primary mb-4">{{ profession.title }} - Deed to Deed</h1>
+
+  <div class="container mt-4">
+    <!-- Back Button -->
+    <div class="mb-3">
+      <a href="javascript:history.back()" class="btn btn-outline-secondary">← Back</a>
+    </div>
+
+    <!-- Salary Dynamics by Year Table and Graph -->
+    <div class="row">
+      <div class="col-md-6">
+        <h3 class="text-primary">Dynamics of Wages by Year</h3>
+        <!-- Table for salary dynamics -->
+        <table class="table table-hover">
+          <thead style="background-color: #343a40; color: #fff;">
+            <tr>
+              <th>Year</th>
+              <th>Average Salary (RUB)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for year, avg_salary in salary_dynamics.items %}
+              <tr>
+                <td>{{ year }}</td>
+                <td>{{ avg_salary|floatformat:2 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-6">
+        <h3 class="text-primary">Salary Dynamics by Year (Graph)</h3>
+        <canvas id="salaryChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Vacancies Dynamics by Year Table and Graph -->
+    <div class="row mt-5">
+      <div class="col-md-6">
+        <h3 class="text-primary">Dynamics of the Number of Vacancies by Year</h3>
+        <!-- Table for vacancies dynamics -->
+        <table class="table table-hover">
+          <thead style="background-color: #343a40; color: #fff;">
+            <tr>
+              <th>Year</th>
+              <th>Number of Vacancies</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in vacancies_by_year %}
+              <tr>
+                <td>{{ item.year }}</td>
+                <td>{{ item.count }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-6">
+        <h3 class="text-primary">Vacancies Dynamics by Year (Graph)</h3>
+        <canvas id="vacanciesChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript for rendering graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Data for the Salary Dynamics Chart
+    const salaryData = {
+      labels: [{% for year in salary_dynamics.keys %}'{{ year }}',{% endfor %}],
+      datasets: [{
+        label: 'Average Salary (RUB)',
+        data: [{% for avg_salary in salary_dynamics.values %}{{ avg_salary|floatformat:2 }},{% endfor %}],
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+        borderWidth: 2,
+        pointBackgroundColor: '#007bff',
+        pointBorderColor: '#fff'
+      }]
+    };
+
+    const salaryConfig = {
+      type: 'line',
+      data: salaryData,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              color: '#343a40'
+            }
+          }
+        }
+      }
+    };
+
+    new Chart(document.getElementById('salaryChart'), salaryConfig);
+
+    const vacanciesData = {
+      labels: [{% for item in vacancies_by_year %}'{{ item.year }}',{% endfor %}],
+      datasets: [{
+        label: 'Number of Vacancies',
+        data: [{% for item in vacancies_by_year %}{{ item.count }},{% endfor %}],
+        borderColor: '#6c757d',
+        backgroundColor: 'rgba(108, 117, 125, 0.5)',
+        borderWidth: 2
+      }]
+    };
+
+    const vacanciesConfig = {
+      type: 'bar',
+      data: vacanciesData,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              color: '#343a40'
+            }
+          }
+        }
+      }
+    };
+
+    new Chart(document.getElementById('vacanciesChart'), vacanciesConfig);
+  </script>
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      color: #343a40;
+    }
+
+    h1, h3 {
+      font-weight: bold;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: rgba(108, 117, 125, 0.1);
+    }
+
+    .btn-outline-secondary {
+      color: #6c757d;
+      border-color: #6c757d;
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: #6c757d;
+      color: #fff;
+    }
+  </style>
+{% endblock %}
